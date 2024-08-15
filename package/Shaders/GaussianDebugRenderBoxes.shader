@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-Shader "Gaussian Splatting/Debug/Render Boxes"
+Shader"Gaussian Splatting/Debug/Render Boxes"
 {
     SubShader
     {
@@ -7,9 +7,12 @@ Shader "Gaussian Splatting/Debug/Render Boxes"
 
         Pass
         {
-            ZWrite Off
-            Blend OneMinusDstAlpha One
-            Cull Front
+ZWrite Off
+
+Blend OneMinusDstAlpha
+One
+            Cull
+Front
 
 CGPROGRAM
 #pragma vertex vert
@@ -21,6 +24,8 @@ CGPROGRAM
 #include "GaussianSplatting.hlsl"
 
 StructuredBuffer<uint> _OrderBuffer;
+StructuredBuffer<float4x4> _SplatCutouts; // Cutout buffer
+int _SplatCutoutsCount; // Number of cutouts
 
 bool _DisplayChunks;
 
@@ -33,19 +38,60 @@ struct v2f
 float _SplatScale;
 float _SplatOpacityScale;
 
+#define CUTOUT_TYPE_ELLIPSOID 0u
+#define CUTOUT_TYPE_BOX 1u
+#define CUTOUT_FLAG_INVERT 0x100u
+
 // based on https://iquilezles.org/articles/palettes/
 // cosine based palette, 4 vec3 params
 half3 palette(float t, half3 a, half3 b, half3 c, half3 d)
 {
-    return a + b*cos(6.28318*(c*t+d));
+    return a + b * cos(6.28318 * (c * t + d));
 }
 
-v2f vert (uint vtxID : SV_VertexID, uint instID : SV_InstanceID)
+// Function to apply cutouts
+bool IsInsideCutout(float3 worldPos)
+{
+    for (int i = 0; i < _SplatCutoutsCount; i++)
+    {
+        float4x4 cutoutMatrix = _SplatCutouts[i];
+        uint typeAndFlags = asuint(cutoutMatrix[3].w);
+        uint cutoutType = typeAndFlags & 0xFF;
+        bool invert = (typeAndFlags & CUTOUT_FLAG_INVERT) != 0;
+
+        // Transform the world position into the cutout's local space
+        float3 localPos = mul(cutoutMatrix, float4(worldPos, 1)).xyz;
+
+        bool inside = false;
+
+        if (cutoutType == CUTOUT_TYPE_ELLIPSOID)
+        {
+            inside = dot(localPos, localPos) <= 1.0f;
+        }
+        else if (cutoutType == CUTOUT_TYPE_BOX)
+        {
+            inside = all(abs(localPos) <= 1.0f);
+        }
+
+        if (invert)
+        {
+            inside = !inside;
+        }
+
+        if (inside)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+v2f vert(uint vtxID : SV_VertexID, uint instID : SV_InstanceID)
 {
     v2f o;
     bool chunks = _DisplayChunks;
-	uint idx = vtxID;
-	float3 localPos = float3(idx&1, (idx>>1)&1, (idx>>2)&1) * 2.0 - 1.0;
+    uint idx = vtxID;
+    float3 localPos = float3(idx & 1, (idx >> 1) & 1, (idx >> 2) & 1) * 2.0 - 1.0;
 
     float3 centerWorldPos = 0;
 
@@ -60,10 +106,10 @@ v2f vert (uint vtxID : SV_VertexID, uint instID : SV_InstanceID)
         boxSize *= _SplatScale;
 
         float3x3 splatRotScaleMat = CalcMatrixFromRotationScale(boxRot, boxSize);
-        splatRotScaleMat = mul((float3x3)unity_ObjectToWorld, splatRotScaleMat);
+        splatRotScaleMat = mul((float3x3) unity_ObjectToWorld, splatRotScaleMat);
 
         centerWorldPos = splat.pos;
-        centerWorldPos = mul(unity_ObjectToWorld, float4(centerWorldPos,1)).xyz;
+        centerWorldPos = mul(unity_ObjectToWorld, float4(centerWorldPos, 1)).xyz;
 
         o.col.rgb = saturate(splat.sh.col);
         o.col.a = saturate(splat.opacity * _SplatOpacityScale);
@@ -79,19 +125,33 @@ v2f vert (uint vtxID : SV_VertexID, uint instID : SV_InstanceID)
         float3 posMax = float3(chunk.posX.y, chunk.posY.y, chunk.posZ.y);
 
         localPos = lerp(posMin, posMax, localPos);
-        localPos = mul(unity_ObjectToWorld, float4(localPos,1)).xyz;
+        localPos = mul(unity_ObjectToWorld, float4(localPos, 1)).xyz;
 
-        o.col.rgb = palette((float)instID / (float)_SplatChunkCount, half3(0.5,0.5,0.5), half3(0.5,0.5,0.5), half3(1,1,1), half3(0.0, 0.33, 0.67));
+        o.col.rgb = palette((float) instID / (float) _SplatChunkCount, half3(0.5, 0.5, 0.5), half3(0.5, 0.5, 0.5), half3(1, 1, 1), half3(0.0, 0.33, 0.67));
         o.col.a = 0.1;
     }
 
     float3 worldPos = centerWorldPos + localPos;
-    o.vertex = UnityWorldToClipPos(worldPos);
+    
+
+    // Apply the cutout logic
+    if (IsInsideCutout(worldPos))
+    {
+        // If inside a cutout, do not cull, make the vertex visible
+        o.vertex = UnityWorldToClipPos(worldPos);
+        o.col.a = 1.0; // Ensure the alpha is set to 1
+    }
+    else
+    {
+        // If outside the cutout, make the vertex transparent
+        o.col.a = 0;
+        o.vertex = UnityWorldToClipPos(worldPos);
+    }
 
     return o;
 }
 
-half4 frag (v2f i) : SV_Target
+half4 frag(v2f i) : SV_Target
 {
     half4 res = half4(i.col.rgb * i.col.a, i.col.a);
     return res;
