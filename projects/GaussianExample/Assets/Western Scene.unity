@@ -1302,7 +1302,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -1354,7 +1354,7 @@ MonoBehaviour:
   freeLookSensitivity: 2
   zoomSensitivity: 1
   fastZoomSensitivity: 50
-  inactivityResetTime: 10
+  inactivityResetTime: 15
 --- !u!1 &1943767390
 GameObject:
   m_ObjectHideFlags: 0
