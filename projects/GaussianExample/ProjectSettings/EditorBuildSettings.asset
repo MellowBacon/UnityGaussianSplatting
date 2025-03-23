@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Western Scene.unity
+    guid: d5156217d2d2bf94ead0a82d5afd0a7a
   m_configObjects: {}
