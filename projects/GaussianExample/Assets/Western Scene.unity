@@ -1354,6 +1354,7 @@ MonoBehaviour:
   freeLookSensitivity: 2
   zoomSensitivity: 1
   fastZoomSensitivity: 50
+  inactivityResetTime: 10
 --- !u!1 &1943767390
 GameObject:
   m_ObjectHideFlags: 0
