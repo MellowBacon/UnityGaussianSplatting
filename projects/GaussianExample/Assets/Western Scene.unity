@@ -364,6 +364,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -6.7, y: -30, z: 0}
+--- !u!1 &287561275
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 287561277}
+  - component: {fileID: 287561276}
+  m_Layer: 0
+  m_Name: Camera Rotator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &287561276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287561275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a7bf8dbaa971f34ab330c94dc83b6c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeedSlider: {fileID: 2080021695}
+--- !u!4 &287561277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287561275}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 18.29888, y: 0.1706412, z: -12.47431}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1341980997}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &307148708
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,12 +967,12 @@ Transform:
   m_GameObject: {fileID: 1341980996}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.8859817, z: -0, w: 0.4637203}
-  m_LocalPosition: {x: 14.722, y: 1.562, z: -9.906}
+  m_LocalPosition: {x: -3.5768795, y: 1.3913589, z: 2.5683098}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1931473706}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 287561277}
   m_LocalEulerAnglesHint: {x: 0, y: 124.745, z: 0}
 --- !u!1 &1628435324
 GameObject:
@@ -1161,7 +1207,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1854732121}
-  - component: {fileID: 1854732120}
   m_Layer: 0
   m_Name: Roots Pivot
   m_TagString: Untagged
@@ -1169,19 +1214,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1854732120
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1854732119}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a7bf8dbaa971f34ab330c94dc83b6c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeedSlider: {fileID: 2080021695}
 --- !u!4 &1854732121
 Transform:
   m_ObjectHideFlags: 0
@@ -1614,10 +1646,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 216700656}
   m_HandleRect: {fileID: 684489519}
   m_Direction: 0
-  m_MinValue: 0.1
-  m_MaxValue: 2
+  m_MinValue: -2
+  m_MaxValue: -0.01
   m_WholeNumbers: 0
-  m_Value: 0.1
+  m_Value: -0.01
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1691,7 +1723,7 @@ SceneRoots:
   - {fileID: 1712442222}
   - {fileID: 1067855434}
   - {fileID: 358763810}
-  - {fileID: 1341980997}
+  - {fileID: 287561277}
   - {fileID: 1854732121}
   - {fileID: 2007723101}
   - {fileID: 1943767392}
